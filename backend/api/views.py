@@ -41,11 +41,15 @@ class ChatView(APIView):
             user = request.user
             text = data['text']
             response = None
+
             step, exists = Step.objects.get_or_create(user=user)
+
             if exists:
                 if step.name == 'E':
                     step = Step.objects.create(user=user)
+
             chat_bot = ChatBot(text)
+
             if step.name == 'G' or self.is_greeting(text):
                 Log(text=text, sender='U', step=step).save()
                 step.name = 'Q'
