@@ -61,21 +61,67 @@ pairs = [
 
 
 class ChatBot(object):
+    """
+    A simple chatbot class for generating responses based on predefined pairs.
+
+    Attributes:
+    - _text (str): The input text for which a response is generated.
+    - _response (str): The generated response for the input text.
+    - _chat (Chat): The Chat instance used for responding to input.
+
+    Methods:
+    - get_response(): Get the generated response. If not already set, it is generated using _set_response().
+    - _set_response(): Internal method to set the response based on the input text.
+    - from_json(cls, json_data): Create a ChatBot instance from JSON data, extracting the 'text' field.
+
+    Usage Example:
+    ```
+    chatbot = ChatBot("Hello, how are you?")
+    response = chatbot.get_response()
+    print(response)
+    ```
+    """
+
     def __init__(self, text):
+        """
+        Initialize the ChatBot instance.
+
+        Parameters:
+        - text (str): The input text for which a response is generated.
+        """
         self._text = text
         self._response = None
         self._chat = Chat(pairs, reflections)
 
     def get_response(self):
+        """
+        Get the generated response. If not already set, it is generated using _set_response().
+
+        Returns:
+        - str: The generated response.
+        """
         if not self._response:
             self._set_response()
         return self._response
 
     def _set_response(self):
+        """
+        Internal method to set the response based on the input text.
+        If no response is generated, a default message is set.
+        """
         self._response = self._chat.respond(self._text)
         if not self._response:
             self._response = 'Sorry, I did not understand the input. Please try again.'
 
     @classmethod
     def from_json(cls, json_data):
+        """
+        Create a ChatBot instance from JSON data.
+
+        Parameters:
+        - json_data (dict): JSON data containing the 'text' field.
+
+        Returns:
+        - ChatBot: An instance of the ChatBot class.
+        """
         return cls(json_data['text'])
