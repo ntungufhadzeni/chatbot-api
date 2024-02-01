@@ -64,6 +64,8 @@ class ChatView(APIView):
                 Log(text=response, sender='C', step=step).save()
 
             return Response({'text': response}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):
