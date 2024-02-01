@@ -29,7 +29,7 @@ class ChatView(APIView):
         return False
 
     def get(self, request):
-        data = {'text': 'Welcome to the Math Bot!'}
+        data = {'text': 'Welcome to the ChatBot!'}
         serializer = ChatSerializer(data=data)
         serializer.is_valid()
         return Response(serializer.data, status=status.HTTP_200_OK)
