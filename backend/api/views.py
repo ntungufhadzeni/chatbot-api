@@ -1,9 +1,8 @@
-from django.contrib.auth.models import User
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .chatbot import ChatBot
 from .models import Step, Log
@@ -16,13 +15,15 @@ GOODBYE = ("goodbye", "bye", "farewell", "see you", "adios", "see ya")
 class ChatView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def is_greeting(self, text: str):
+    @staticmethod
+    def is_greeting(text: str):
         for word in text.split():
             if word.lower() in GREETING:
                 return True
         return False
 
-    def is_ending(self, text: str):
+    @staticmethod
+    def is_ending(text: str):
         for word in text.split():
             if word.lower() in GOODBYE:
                 return True
