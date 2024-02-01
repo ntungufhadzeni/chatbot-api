@@ -35,6 +35,8 @@ class TestToken(TestSetUp):
         self.assertTrue('access' in resp.data)
 
 
+from rest_framework import status
+
 class TestChat(TestSetUp):
     def test_chat_logout(self):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
@@ -49,3 +51,15 @@ class TestChat(TestSetUp):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
         resp = self.client.get(reverse('chat'), format='json')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    def test_chat_post_with_invalid_data(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
+        resp = self.client.post(reverse('chat'), {'data': 'hello'}, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_chat_post_with_valid_data(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
+        resp = self.client.post(reverse('chat'), {'text': 'hello'}, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(resp.json(), {'text': 'Hello, I am Chatty. Ask me some questions.'})
+
