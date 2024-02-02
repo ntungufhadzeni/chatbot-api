@@ -35,8 +35,6 @@ class TestToken(TestSetUp):
         self.assertTrue('access' in resp.data)
 
 
-from rest_framework import status
-
 class TestChat(TestSetUp):
     def test_chat_logout(self):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
@@ -62,4 +60,3 @@ class TestChat(TestSetUp):
         resp = self.client.post(reverse('chat'), {'text': 'hello'}, format='json')
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         self.assertEqual(resp.json(), {'text': 'Hello, I am Chatty. Ask me some questions.'})
-
