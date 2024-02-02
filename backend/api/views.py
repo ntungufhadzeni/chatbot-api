@@ -13,17 +13,67 @@ GOODBYE = ("goodbye", "bye", "farewell", "see you", "adios", "see ya")
 
 
 class ChatView(APIView):
+    """
+    API view for handling chat interactions with a ChatBot.
+
+    This view supports both GET and POST requests. Authentication is required, and
+    the `IsAuthenticated` permission class is applied.
+
+    HTTP Methods:
+    - GET: Returns a welcome message.
+    - POST: Handles user input, processes it with a ChatBot, and returns the generated response.
+
+    Permissions:
+    - Requires authentication using the `IsAuthenticated` permission class.
+
+    Attributes:
+    - GREETING (tuple): A tuple containing phrases considered as greetings.
+    - GOODBYE (tuple): A tuple containing phrases considered as goodbyes.
+
+    Methods:
+    - is_greeting(text: str) -> bool: Check if the input text contains a greeting.
+    - is_ending(text: str) -> bool: Check if the input text contains a goodbye.
+    - save_step(step: Step, name: str, text: str): Save the current step and log a user's input.
+
+    Example Usage:
+    ```python
+    # Example POST request with user input
+    # curl -X POST -H "Authorization: Bearer <your_access_token>" -d '{"text": "Hello, how are you?"}' http://your-api-domain/chat/
+    ```
+
+    Note:
+    - Ensure that the `IsAuthenticated` permission is applied to restrict access to authenticated users only.
+    - Make sure to include the appropriate authentication headers when making requests to this endpoint.
+    """
     permission_classes = (IsAuthenticated,)
 
     @staticmethod
-    def is_greeting(text: str):
+    def is_greeting(text: str) -> bool:
+        """
+        Check if the input text contains a greeting.
+
+        Parameters:
+        - text (str): The input text to be checked.
+
+        Returns:
+        - bool: True if a greeting is found; otherwise, False.
+        """
         for word in text.split():
             if word.lower() in GREETING:
                 return True
         return False
 
     @staticmethod
-    def is_ending(text: str):
+    def is_ending(text: str) -> bool:
+        """
+        Check if the input text contains a goodbye.
+
+        Parameters:
+        - text (str): The input text to be checked.
+
+        Returns:
+        - bool: True if a goodbye is found; otherwise, False.
+        """
         for word in text.split():
             if word.lower() in GOODBYE:
                 return True
@@ -31,17 +81,43 @@ class ChatView(APIView):
 
     @staticmethod
     def save_step(step: Step, name: str, text: str):
+        """
+        Save the current step and log a user's input.
+
+        Parameters:
+        - step (Step): The Step instance associated with the user.
+        - name (str): The name of the step to be saved.
+        - text (str): The user's input text.
+        """
         step.name = name
         step.save()
         Log(step=step, sender='U', text=text).save()
 
     def get(self, request):
+        """
+        Handle GET requests by returning a welcome message.
+
+        Parameters:
+        - request (Request): The HTTP request object.
+
+        Returns:
+        - Response: A Response object containing a welcome message and a status of 200 OK.
+        """
         data = {'text': 'Welcome to the ChatBot!'}
         serializer = ChatSerializer(data=data)
         serializer.is_valid()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
+        """
+        Handle POST requests by processing user input and returning the ChatBot's response.
+
+        Parameters:
+        - request (Request): The HTTP request object.
+
+        Returns:
+        - Response: A Response object containing the generated response or errors with appropriate status codes.
+        """
         serializer = ChatSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
