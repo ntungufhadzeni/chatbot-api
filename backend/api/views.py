@@ -29,6 +29,12 @@ class ChatView(APIView):
                 return True
         return False
 
+    @staticmethod
+    def save_step(step: Step, name: str, text: str):
+        step.name = name
+        step.save()
+        Log(step=step, sender='U', text=text).save()
+
     def get(self, request):
         data = {'text': 'Welcome to the ChatBot!'}
         serializer = ChatSerializer(data=data)
@@ -49,22 +55,18 @@ class ChatView(APIView):
                 if step.name == 'E':
                     step = Step.objects.create(user=user)
 
-            chat_bot = ChatBot(text)
+            chat_bot = ChatBot.from_json(data)
 
             if step.name == 'G' or self.is_greeting(text):
-                Log(text=text, sender='U', step=step).save()
-                step.name = 'Q'
-                step.save()
+                self.save_step(step, 'Q', text)
                 response = 'Hello, I am Chatty. Ask me some questions.'
                 Log(text=response, sender='C', step=step).save()
             elif self.is_ending(text):
-                Log(text=text, sender='U', step=step).save()
-                step.name = 'E'
-                step.save()
+                self.save_step(step, 'E', text)
                 response = 'Bye. Have a nice day!'
                 Log(text=response, sender='C', step=step).save()
             elif step.name == 'Q':
-                Log(text=text, sender='U', step=step).save()
+                self.save_step(step, 'Q', text)
                 response = chat_bot.get_response()
                 Log(text=response, sender='C', step=step).save()
 
@@ -74,9 +76,43 @@ class ChatView(APIView):
 
 
 class LogoutView(APIView):
+    """
+    API view for handling user logout by blacklisting refresh tokens.
+
+    This view expects a POST request with a valid refresh token in the request data.
+    Upon receiving a valid refresh token, it is blacklisted, effectively logging the user out.
+
+    Permissions:
+    - Requires authentication using the `IsAuthenticated` permission class.
+
+    HTTP Methods:
+    - POST: Blacklists the provided refresh token, logging the user out.
+      Returns a 205 Reset Content status upon success.
+      Returns a 400 Bad Request status if there is an exception during the process.
+
+    Example Usage:
+    ```python
+    # Example POST request with a valid refresh token
+    # curl -X POST -H "Authorization: Bearer <your_refresh_token>" http://your-api-domain/logout/
+    ```
+
+    Note:
+    - Ensure that the `IsAuthenticated` permission is applied to restrict access to authenticated users only.
+    - Make sure to include the appropriate authentication headers when making requests to this endpoint.
+    """
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
+        """
+        Handle user logout by blacklisting refresh tokens.
+
+        Parameters:
+        - request (Request): The HTTP request object.
+
+        Returns:
+        - Response: A Response object with a status of 205 Reset Content upon success.
+                    A Response object with a status of 400 Bad Request if there is an exception during the process.
+        """
         try:
             refresh_token = request.data["refresh_token"]
             token = RefreshToken(refresh_token)
