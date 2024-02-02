@@ -202,6 +202,34 @@ class LogoutView(APIView):
 
 
 class RegisterView(generics.CreateAPIView):
+    """
+    API view for user registration.
+
+    This view allows users to register by providing their username, email, and password.
+    Upon successful registration, a new user account is created.
+
+    HTTP Methods:
+    - POST: Create a new user account by providing the required registration information.
+
+    Request Parameters (POST):
+    - username (str): The desired username for the new user account.
+    - email (str): The email address for the new user account.
+    - password (str): The password for the new user account.
+    - password2 (str): Confirmation of the password for validation.
+
+    Returns:
+    - Response: A Response object indicating the result of the registration process.
+
+    Example Usage:
+    ```python
+    # Example POST request to register a new user
+    # curl -X POST http://your-api-domain/register/ -d "username=newuser&email=newuser@example.com&password=password&password2=password"
+    ```
+
+    Note:
+    - Make sure to provide the necessary parameters in the request body for successful registration.
+    - Password and password2 must match for successful registration.
+    """
     queryset = User.objects.all()
     permission_classes = [AllowAny, ]
     serializer_class = RegisterSerializer
