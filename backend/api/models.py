@@ -53,3 +53,12 @@ class Log(TimeStampedModel):
     text = models.TextField()
     sender = models.CharField(max_length=1, choices=CHOICES)
     step = models.ForeignKey(Step, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f'Log, {self.text}'
+
+    def __repr__(self):
+        return f"<Log: {self.text} {self.created_at}>"
