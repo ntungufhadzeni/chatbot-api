@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'api',
     'corsheaders',
     'rest_framework',
-    'rest_framework_simplejwt.token_blacklist'
+    'rest_framework_simplejwt.token_blacklist',
+    'drf_yasg',
 
 ]
 
@@ -66,7 +67,6 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True
 }
-
 
 CORS_ALLOWED_ORIGINS = ['http://localhost:3000', ]
 
