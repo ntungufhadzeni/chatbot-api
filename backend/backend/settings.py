@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
+    'rest_framework_simplejwt',
     'drf_yasg',
 
 ]
@@ -66,6 +67,16 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        "Auth Token eg [Bearer (JWT)]": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
 }
 
 CORS_ALLOWED_ORIGINS = ['http://localhost:3000', ]
