@@ -95,13 +95,12 @@ class ChatBot(object):
 
     def get_response(self):
         """
-        Get the generated response. If not already set, it is generated using _set_response().
+        Get the generated response. It is generated using _set_response().
 
         Returns:
         - str: The generated response.
         """
-        if not self._response:
-            self._set_response()
+        self._set_response()
         return self._response
 
     def _set_response(self):
