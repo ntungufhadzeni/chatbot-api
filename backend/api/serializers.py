@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from backend.api.models import Step, Log
+from .models import Step, Log
 
 
 class ChatSerializer(serializers.Serializer):
