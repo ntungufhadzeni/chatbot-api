@@ -1,4 +1,5 @@
 from nltk.chat.util import Chat, reflections
+from .interfaces.chatbot_interface import ChatBotInterface
 
 pairs = [
     [
@@ -60,7 +61,7 @@ pairs = [
 ]
 
 
-class ChatBot(object):
+class NltkChatBot(ChatBotInterface):
     """
     A simple chatbot class for generating responses based on predefined pairs.
 
@@ -124,3 +125,6 @@ class ChatBot(object):
         - ChatBot: An instance of the ChatBot class.
         """
         return cls(json_data['text'])
+
+    def get_text(self):
+        return self._text
