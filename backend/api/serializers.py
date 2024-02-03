@@ -4,6 +4,16 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 
+class LogoutSerializer(serializers.Serializer):
+    """
+    Serializer for handling logout-related data.
+
+    Attributes:
+    - refresh_token (str): The refresh token.
+    """
+    refresh_token = serializers.CharField()
+
+
 class ChatSerializer(serializers.Serializer):
     """
     Serializer for handling chat-related data.
