@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from rest_framework import status, generics
-from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,6 +14,9 @@ GOODBYE = ("goodbye", "bye", "farewell", "see you", "adios", "see ya")
 
 
 class HomeView(APIView):
+    """
+    API view for API home page
+    """
     permission_classes = (AllowAny,)
 
     def get(self, request):
@@ -128,11 +130,10 @@ class ChatView(APIView):
             text = data['text']
             response = None
 
-            step, exists = Step.objects.get_or_create(user=user)
+            step, exists = Step.objects.get_or_create(user=user)  # get or create new session for a user
 
-            if exists:
-                if step.name == 'E':
-                    step = Step.objects.create(user=user)
+            if exists and step.name == 'E':
+                step = Step.objects.create(user=user)  # create new session if the previous one has ended
 
             chat_bot = ChatBot.from_json(data)
 
