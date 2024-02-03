@@ -5,9 +5,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .chatbot import ChatBot
-from .models import Step, Log
+from .nltk_chatbot import NltkChatBot
+from .repositories.log__repository import LogRepository
+from .repositories.step_repository import StepRepository
 from .serializers import ChatSerializer, RegisterSerializer, LogoutSerializer
+from .services.chatbot_service import ChatBotService
 
 GREETING = ("hello", "hi", "greetings", "sup", "what’s up", "hey", "yo")
 GOODBYE = ("goodbye", "bye", "farewell", "see you", "adios", "see ya")
@@ -46,15 +48,6 @@ class ChatView(generics.GenericAPIView):
     Permissions:
     - Requires authentication using the `IsAuthenticated` permission class.
 
-    Attributes:
-    - GREETING (tuple): A tuple containing phrases considered as greetings.
-    - GOODBYE (tuple): A tuple containing phrases considered as goodbyes.
-
-    Methods:
-    - is_greeting(text: str) -> bool: Check if the input text contains a greeting.
-    - is_ending(text: str) -> bool: Check if the input text contains a goodbye.
-    - save_step(step: Step, name: str, text: str): Save the current step and log a user's input.
-
     Example Usage:
     ```python
     # Example POST request with user input
@@ -67,52 +60,6 @@ class ChatView(generics.GenericAPIView):
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = ChatSerializer
-
-    @staticmethod
-    def is_greeting(text: str) -> bool:
-        """
-        Check if the input text contains a greeting.
-
-        Parameters:
-        - text (str): The input text to be checked.
-
-        Returns:
-        - bool: True if a greeting is found; otherwise, False.
-        """
-        for word in text.split():
-            if word.lower() in GREETING:
-                return True
-        return False
-
-    @staticmethod
-    def is_ending(text: str) -> bool:
-        """
-        Check if the input text contains a goodbye.
-
-        Parameters:
-        - text (str): The input text to be checked.
-
-        Returns:
-        - bool: True if a goodbye is found; otherwise, False.
-        """
-        for word in text.split():
-            if word.lower() in GOODBYE:
-                return True
-        return False
-
-    @staticmethod
-    def save_step(step: Step, name: str, text: str):
-        """
-        Save the current step and log a user's input.
-
-        Parameters:
-        - step (Step): The Step instance associated with the user.
-        - name (str): The name of the step to be saved.
-        - text (str): The user's input text.
-        """
-        step.name = name
-        step.save()
-        Log(step=step, sender='U', text=text).save()
 
     def post(self, request):
         """
@@ -128,30 +75,16 @@ class ChatView(generics.GenericAPIView):
         if serializer.is_valid():
             data = serializer.validated_data
             user = request.user
-            text = data['text']
-            response = None
 
-            step, exists = Step.objects.get_or_create(user=user)  # get or create new session for a user
+            step_repository = StepRepository(user)
+            log_repository = LogRepository()
+            chat_bot = NltkChatBot.from_json(data)
 
-            if exists and step.name == 'E':
-                step = Step.objects.create(user=user)  # create new session if the previous one has ended
+            chatbot_service = ChatBotService(chat_bot, log_repository, step_repository)
+            response = chatbot_service.get_response()
+            data = {'text': response}
 
-            chat_bot = ChatBot.from_json(data)
-
-            if step.name == 'G' or self.is_greeting(text):
-                self.save_step(step, 'Q', text)
-                response = 'Hello, I am Chatty. Ask me some questions.'
-                Log(text=response, sender='C', step=step).save()
-            elif self.is_ending(text):
-                self.save_step(step, 'E', text)
-                response = 'Bye. Have a nice day!'
-                Log(text=response, sender='C', step=step).save()
-            elif step.name == 'Q':
-                self.save_step(step, 'Q', text)
-                response = chat_bot.get_response()
-                Log(text=response, sender='C', step=step).save()
-
-            return Response({'text': response}, status=status.HTTP_201_CREATED)
+            return Response(data, status=status.HTTP_201_CREATED)
         else:
             return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
