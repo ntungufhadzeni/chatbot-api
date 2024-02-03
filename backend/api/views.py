@@ -14,15 +14,31 @@ GREETING = ("hello", "hi", "greetings", "sup", "what’s up", "hey", "yo")
 GOODBYE = ("goodbye", "bye", "farewell", "see you", "adios", "see ya")
 
 
+class HomeView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        """
+        Handle GET requests by returning a welcome message.
+
+        Parameters:
+        - request (Request): The HTTP request object.
+
+        Returns:
+        - Response: A Response object containing a welcome message and a status of 200 OK.
+        """
+        data = {'text': 'Welcome to the ChatBot!'}
+        return Response(data, status=status.HTTP_200_OK)
+
+
 class ChatView(APIView):
     """
     API view for handling chat interactions with a ChatBot.
 
-    This view supports both GET and POST requests. Authentication is required, and
+    This view supports POST requests. Authentication is required, and
     the `IsAuthenticated` permission class is applied.
 
     HTTP Methods:
-    - GET: Returns a welcome message.
     - POST: Handles user input, processes it with a ChatBot, and returns the generated response.
 
     Permissions:
@@ -94,21 +110,6 @@ class ChatView(APIView):
         step.name = name
         step.save()
         Log(step=step, sender='U', text=text).save()
-
-    def get(self, request):
-        """
-        Handle GET requests by returning a welcome message.
-
-        Parameters:
-        - request (Request): The HTTP request object.
-
-        Returns:
-        - Response: A Response object containing a welcome message and a status of 200 OK.
-        """
-        data = {'text': 'Welcome to the ChatBot!'}
-        serializer = ChatSerializer(data=data)
-        serializer.is_valid()
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         """
