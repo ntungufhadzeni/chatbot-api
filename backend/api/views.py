@@ -7,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .chatbot import ChatBot
 from .models import Step, Log
-from .serializers import ChatSerializer, RegisterSerializer
+from .serializers import ChatSerializer, RegisterSerializer, LogoutSerializer
 
 GREETING = ("hello", "hi", "greetings", "sup", "what’s up", "hey", "yo")
 GOODBYE = ("goodbye", "bye", "farewell", "see you", "adios", "see ya")
@@ -33,7 +33,7 @@ class HomeView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class ChatView(APIView):
+class ChatView(generics.GenericAPIView):
     """
     API view for handling chat interactions with a ChatBot.
 
@@ -66,6 +66,7 @@ class ChatView(APIView):
     - Make sure to include the appropriate authentication headers when making requests to this endpoint.
     """
     permission_classes = (IsAuthenticated,)
+    serializer_class = ChatSerializer
 
     @staticmethod
     def is_greeting(text: str) -> bool:
@@ -123,7 +124,7 @@ class ChatView(APIView):
         Returns:
         - Response: A Response object containing the generated response or errors with appropriate status codes.
         """
-        serializer = ChatSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
             user = request.user
@@ -155,7 +156,7 @@ class ChatView(APIView):
             return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LogoutView(APIView):
+class LogoutView(generics.GenericAPIView):
     """
     API view for handling user logout by blacklisting refresh tokens.
 
@@ -181,6 +182,7 @@ class LogoutView(APIView):
     - Make sure to include the appropriate authentication headers when making requests to this endpoint.
     """
     permission_classes = (IsAuthenticated,)
+    serializer_class = LogoutSerializer
 
     def post(self, request):
         """
@@ -193,13 +195,14 @@ class LogoutView(APIView):
         - Response: A Response object with a status of 205 Reset Content upon success.
                     A Response object with a status of 400 Bad Request if there is an exception during the process.
         """
-        try:
-            refresh_token = request.data["refresh_token"]
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            refresh_token = serializer.validated_data['refresh_token']
             token = RefreshToken(refresh_token)
             token.blacklist()
 
             return Response(status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
+        else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
