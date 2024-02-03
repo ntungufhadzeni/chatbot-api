@@ -29,7 +29,7 @@ class HomeView(APIView):
         Returns:
         - Response: A Response object containing a welcome message and a status of 200 OK.
         """
-        data = {'text': 'Welcome to the ChatBot!'}
+        data = {'text': 'Welcome to the ChatBot API.'}
         return Response(data, status=status.HTTP_200_OK)
 
 
