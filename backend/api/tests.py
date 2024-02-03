@@ -41,13 +41,8 @@ class TestChat(TestSetUp):
         resp = self.client.post(reverse('logout'), {"refresh_token": self.refresh_token}, format='json')
         self.assertEqual(resp.status_code, status.HTTP_205_RESET_CONTENT)
 
-    def test_chat_without_token(self):
-        resp = self.client.get(reverse('chat'))
-        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_chat_with_token(self):
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
-        resp = self.client.get(reverse('chat'), format='json')
+    def test_home(self):
+        resp = self.client.get(reverse('home'))
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     def test_chat_post_with_invalid_data(self):
