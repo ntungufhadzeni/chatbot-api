@@ -11,6 +11,7 @@ The ChatBot API is a Django REST Framework-based backend for a simple chatbot ap
   - [Usage](#usage)
 - [API Endpoints](#api-endpoints)
 - [Authentication](#authentication)
+- [Design Patterns](#design-patterns)
 
 ## Features
 
@@ -79,9 +80,21 @@ curl -X POST http://localhost:8000/register/ -d "username=newuser&email=newuser@
 ```bash
 curl -X POST http://localhost:8000/token/ -d "username=newuser&password=password"
 ```
-#### Access ChatBot
+#### Interact with ChatBot
+- To wake up the chatbot/to create a new session
+```bash
+curl -X POST http://localhost:8000/chat/ -H "Authorization: Bearer your_token_here" -d "text=hello"
+```
+- Ask questions
 ```bash
 curl -X POST http://localhost:8000/chat/ -H "Authorization: Bearer your_token_here" -d "text=who created you?"
+```
+```bash
+curl -X POST http://localhost:8000/chat/ -H "Authorization: Bearer your_token_here" -d "text=tell me a joke"
+```
+- Close session
+```bash
+curl -X POST http://localhost:8000/chat/ -H "Authorization: Bearer your_token_here" -d "text=bye"
 ```
 #### Refresh Token
 ```bash
@@ -109,4 +122,28 @@ The API uses Token-based authentication. Include the token in the Authorization 
 Authorization: Bearer your_token_here
 ```
 
-   
+## Design Patterns
+### Abstract Factory Pattern
+The Abstract Factory Pattern is employed to enhance scalability, maintainability, and adaptability of the codebase. Key aspects of its implementation include:
+
+- **Abstraction of Classes:** Abstract classes are created and implemented to ensure that classes depend on interfaces rather than concrete classes, minimizing coupling. This adheres to the Dependency Inversion Principle.
+
+- **Separate Interfaces:** Distinct interfaces are designed for various classes to prevent the implementation of methods that a class does not utilize.
+
+### Adapter Pattern
+The Adapter Pattern is utilized to enhance flexibility in the codebase. Noteworthy aspects of its implementation include:
+
+- **Dependency on Interfaces:** The service class is designed to depend on interfaces rather than concrete classes, facilitating ease in changing the repository to a NoSQL database or switching the chatbot from NLTK to Chat-GPT.
+
+## Application Logic
+The application logic follows a structured process to ensure seamless interaction with the chatbot:
+
+- **Session Retrieval:** The system retrieves the latest session by filtering with the created time using the user object.
+
+- **New Session Creation:** If the session does not exist or has ended, a new session is created.
+
+- **Greeting Response:** If the session is new or the text is a greeting, a welcoming response is generated for the user.
+
+- **Question Response:** If the session state is 'question', a response is generated from the chatbot and sent to the user.
+
+- **Goodbye Handling:** If the user's input signals a goodbye, an appropriate farewell is provided.
