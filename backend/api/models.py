@@ -20,6 +20,11 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
+
+
 class Step(TimeStampedModel):
     """
     Model representing a step in a chat conversation.
@@ -28,13 +33,23 @@ class Step(TimeStampedModel):
     - name (str): The name of the step, chosen from predefined choices ('G' for greeting, 'Q' for question, 'E' for end).
     - user (ForeignKey to User): The user associated with this step.
     """
+
     CHOICES = (
-        ('G', 'greeting'),
-        ('Q', 'question'),
-        ('E', 'end'),
+        ('G', _('Greeting')),
+        ('Q', _('Question')),
+        ('E', _('End')),
     )
     name = models.CharField(max_length=1, choices=CHOICES, default='G')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Step {self.get_name_display()} for User {self.user.username} (created at {self.created_at})"
+
+    def __repr__(self):
+        return f"<Step: {self.get_name_display()} - User: {self.user.username} - Created at: {self.created_at}>"
+
+    class Meta:
+        ordering = ("-created_at",)
 
 
 class Log(TimeStampedModel):
