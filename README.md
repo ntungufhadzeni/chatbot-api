@@ -147,3 +147,14 @@ The application logic follows a structured process to ensure seamless interactio
 - **Question Response:** If the session state is 'question', a response is generated from the chatbot and sent to the user.
 
 - **Goodbye Handling:** If the user's input signals a goodbye, an appropriate farewell is provided.
+
+## Testing and Coverage
+- To run tests and assess coverage, execute the following command:
+```bash
+coverage run manage.py test
+```
+- To generate a coverage report, use the following command:
+```bash
+coverage report
+```
+Note: The application currently achieves an impressive 87% test coverage.
