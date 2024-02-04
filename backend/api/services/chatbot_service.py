@@ -20,9 +20,9 @@ class ChatBotService(object):
         self._step = None
 
     def get_response(self):
-        self._step, exists = self._step_repository.get_or_create()  # get or create new session for a user
+        self._step = self._step_repository.get()  # get session for a user
 
-        if exists and self._step.name == 'E':
+        if not self._step or self._step.name == 'E':
             self._step = self._step_repository.create()  # create new session if the previous one has ended
 
         self._text = self._chatbot.get_text()

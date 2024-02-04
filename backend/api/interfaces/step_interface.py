@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class StepInterface(ABC):
     @abstractmethod
-    def get_or_create(self, *args, **kwargs):
+    def get(self, *args, **kwargs):
         raise NotImplementedError
 
     @abstractmethod

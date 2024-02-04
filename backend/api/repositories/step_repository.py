@@ -6,8 +6,8 @@ class StepRepository(StepInterface):
     def __init__(self, user):
         self.user = user
 
-    def get_or_create(self):
-        return Step.objects.get_or_create(user=self.user)
+    def get(self):
+        return Step.objects.all()[0]
 
     def create(self):
         return Step.objects.create(user=self.user)
