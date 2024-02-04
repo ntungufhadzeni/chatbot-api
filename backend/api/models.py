@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class TimeStampedModel(models.Model):
@@ -18,11 +19,6 @@ class TimeStampedModel(models.Model):
 
     class Meta:
         abstract = True
-
-
-from django.db import models
-from django.contrib.auth.models import User
-from django.utils.translation import gettext_lazy as _
 
 
 class Step(TimeStampedModel):
@@ -62,18 +58,19 @@ class Log(TimeStampedModel):
     - step (ForeignKey to Step): The step associated with this log entry.
     """
     CHOICES = (
-        ('U', 'user'),
-        ('C', 'chat'),
+        ('U', _('User')),
+        ('C', _('Chat')),
     )
     text = models.TextField()
     sender = models.CharField(max_length=1, choices=CHOICES)
     step = models.ForeignKey(Step, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ("-created_at",)
 
     def __str__(self):
-        return f'Log, {self.text}'
+        return f'Log Entry ({self.sender}): {self.text} (created at {self.created_at})'
 
     def __repr__(self):
-        return f"<Log: {self.text} {self.created_at}>"
+        return f"<Log Entry ({self.sender}): {self.text} - Created at: {self.created_at}>"
