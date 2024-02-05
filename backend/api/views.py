@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .nltk_chatbot import NltkChatBot
-from .repositories.log__repository import LogRepository
+from .repositories.log_repository import LogRepository
 from .repositories.step_repository import StepRepository
 from .serializers import ChatSerializer, RegisterSerializer, LogoutSerializer
 from .services.chatbot_service import ChatBotService
