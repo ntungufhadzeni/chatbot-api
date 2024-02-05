@@ -1,4 +1,3 @@
-
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -15,7 +14,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-ifjpd4!2br$23%5c&41bg#9ld1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get('DEBUG', 1)))
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(' ')
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1 localhost').split(' ')
 
 # Application definition
 
@@ -49,6 +48,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],
 }
 
 SIMPLE_JWT = {
