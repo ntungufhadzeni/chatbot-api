@@ -17,20 +17,19 @@ GOODBYE = ("goodbye", "bye", "farewell", "see you", "adios", "see ya")
 
 class HomeView(APIView):
     """
-    API view for API home page
+    API view for the home page.
+
+    Handles GET requests by returning a welcome message.
+
+    Parameters:
+    - request (Request): The HTTP request object.
+
+    Returns:
+    - Response: A Response object containing a welcome message and a status of 200 OK.
     """
-    permission_classes = (AllowAny,)
+    permission_classes = [AllowAny]
 
     def get(self, request):
-        """
-        Handle GET requests by returning a welcome message.
-
-        Parameters:
-        - request (Request): The HTTP request object.
-
-        Returns:
-        - Response: A Response object containing a welcome message and a status of 200 OK.
-        """
         data = {'text': 'Welcome to the ChatBot API.'}
         return Response(data, status=status.HTTP_200_OK)
 
