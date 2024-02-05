@@ -12,6 +12,8 @@ The ChatBot API is a Django REST Framework-based backend for a simple chatbot ap
 - [API Endpoints](#api-endpoints)
 - [Authentication](#authentication)
 - [Design Patterns](#design-patterns)
+- [Application Logic](#application-logic)
+- [Testing](#testing-and-coverage)
 
 ## Features
 
@@ -114,7 +116,7 @@ curl -X POST http://localhost:8000/logout/ -H "Authorization: Bearer your_token_
 - Chat: /chat/ (POST)
 - Home: / (GET)
  
-For detailed information about each endpoint, refer to the [API Documentation](#).
+For detailed information about each endpoint, refer to http://localhost:8000/redoc/.
 
 ## Authentication
 The API uses Token-based authentication. Include the token in the Authorization header of your requests:
@@ -144,9 +146,9 @@ The application logic follows a structured process to ensure seamless interactio
 
 - **Greeting Response:** If the session is new or the text is a greeting, a welcoming response is generated for the user.
 
-- **Question Response:** If the session state is 'question', a response is generated from the chatbot and sent to the user.
-
 - **Goodbye Handling:** If the user's input signals a goodbye, an appropriate farewell is provided.
+
+- **Question Response:** If the session state is 'question', a response is generated from the nltk chatbot and sent to the user.
 
 ## Testing and Coverage
 - To run tests and assess coverage, execute the following command:
