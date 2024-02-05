@@ -16,7 +16,7 @@ services:
     restart: always
   db:
     build:
-      context: ./postgres
+      context: backend/db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
   nginx:
